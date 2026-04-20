@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model comments {
+  id        Int       @id @default(autoincrement())
+  userId    Int?
+  imageId   Int?
+  content   String?   @db.VarChar(255)
+  deletedBy Int       @default(0)
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime? @db.Timestamp(0)
+  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt DateTime  @default(now()) @db.Timestamp(0)
+  users     users?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_ibfk_1")
+  images    images?   @relation(fields: [imageId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comments_ibfk_2")
+
+  @@index([imageId], map: "imageId")
+  @@index([userId], map: "userId")
+}
+
+model images {
+  id          Int        @id @default(autoincrement())
+  title       String?    @db.VarChar(255)
+  link        String?    @db.VarChar(255)
+  description String?    @db.VarChar(255)
+  userId      Int?
+  deletedBy   Int        @default(0)
+  isDeleted   Boolean    @default(false)
+  deletedAt   DateTime?  @db.Timestamp(0)
+  createdAt   DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime   @default(now()) @db.Timestamp(0)
+  comments    comments[]
+  users       users?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_1")
+  savings     savings[]
+
+  @@index([userId], map: "userId")
+}
+
+model savings {
+  userId    Int
+  imageId   Int
+  deletedBy Int       @default(0)
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime? @db.Timestamp(0)
+  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt DateTime  @default(now()) @db.Timestamp(0)
+  users     users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "savings_ibfk_1")
+  images    images    @relation(fields: [imageId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "savings_ibfk_2")
+
+  @@id([userId, imageId])
+  @@index([imageId], map: "imageId")
+}
+
+model users {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique(map: "email") @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  fullName  String?    @db.VarChar(255)
+  age       Int?
+  avatar    String?    @db.VarChar(255)
+  deletedBy Int        @default(0)
+  isDeleted Boolean    @default(false)
+  deletedAt DateTime?  @db.Timestamp(0)
+  createdAt DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt DateTime   @default(now()) @db.Timestamp(0)
+  comments  comments[]
+  images    images[]
+  savings   savings[]
+}

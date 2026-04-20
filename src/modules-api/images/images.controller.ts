@@ -1,0 +1,57 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, ParseIntPipe, Req } from '@nestjs/common';
+import { ImagesService } from './images.service';
+import { CreateImageDto } from './dto/create-image.dto';
+import { UpdateImageDto } from './dto/update-image.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/modules-system/cloudinary/cloudinary.service';
+import { User } from 'src/common/decorators/user.decorator';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+
+@Controller('images')
+export class ImagesController {
+  constructor(private readonly imagesService: ImagesService, private cloudinaryService: CloudinaryService) {}
+
+  @Post('/')
+  async create(@Body() body: CreateImageDto, @User() user){
+    console.log({user})
+    return this.imagesService.create(body, user.id);
+  }
+
+  @Post('/:imageId')
+  @UseInterceptors(FileInterceptor('image_file'))
+  async uploadImage(
+    @Param('imageId', ParseIntPipe)
+    imageId: number,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: ".(png|jpeg|jpg)" })
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 5 })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY})
+    ) 
+    file: Express.Multer.File
+  ) {
+    return await this.imagesService.uploadImage(file, imageId)
+  }
+
+  @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(2000)
+  findAll(@Req() req) {
+    return this.imagesService.findAll(req);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.imagesService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
+    return this.imagesService.update(+id, updateImageDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.imagesService.remove(+id);
+  }
+}
