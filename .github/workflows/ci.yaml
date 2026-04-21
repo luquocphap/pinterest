@@ -15,7 +15,7 @@ jobs:
               run: docker login -u luquocphap -p ${{secrets.PASS_DOCKER}}
             
             - name: Build Image
-              run: docker build luquocphap/img-pinterest:latest .
+              run: docker build -t luquocphap/img-pinterest:latest .
             
             - name: Push Image
               run: docker push luquocphap/img-pinterest:latest
