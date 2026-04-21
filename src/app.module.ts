@@ -15,12 +15,13 @@ import KeyvRedis from '@keyv/redis';
 import { REDIS_URL } from './common/constants/app.constant';
 import type { Cache } from 'cache-manager';
 import { UsersModule } from './modules-api/users/users.module';
+import { SavingsModule } from './modules-api/savings/savings.module';
 
 @Module({
   imports: [AuthModule, PrismaModule, TokenModule, ImagesModule, CommentsModule, CacheModule.register({
     isGlobal: true,
     stores: [new KeyvRedis(REDIS_URL)]
-  }), UsersModule],
+  }), UsersModule, SavingsModule],
   controllers: [AppController],
   providers: [
     AppService,
