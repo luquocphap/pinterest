@@ -5,6 +5,7 @@ import type { Request, Response } from 'express';
 import { RegisterBody } from './dto/register.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { User } from 'src/common/decorators/user.decorator';
+import type { users } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +36,7 @@ export class AuthController {
   }
 
   @Get("user-info")
-  async getUserInfo(@User() user) {
+  async getUserInfo(@User() user: users) {
     return user;
   }
 

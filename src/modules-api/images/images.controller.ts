@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, ParseIntPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, ParseIntPipe, Req, Query } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
@@ -8,15 +8,16 @@ import { User } from 'src/common/decorators/user.decorator';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ImageUploadDto } from './dto/image-upload.dto';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { FindImageDto } from './dto/find-image.dto';
+import type { users } from '@prisma/client';
 
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService, private cloudinaryService: CloudinaryService) {}
 
   @Post('/')
-  async create(@Body() body: CreateImageDto, @User() user){
-    console.log({user})
-    return this.imagesService.create(body, user.id);
+  async create(@Body() body: CreateImageDto, @User() user: users){
+    return this.imagesService.create(body, user);
   }
 
   @Post('/:imageId')
@@ -43,8 +44,8 @@ export class ImagesController {
   @Get()
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(2000)
-  findAll(@Req() req) {
-    return this.imagesService.findAll(req);
+  findAll(@Query() query: FindImageDto) {
+    return this.imagesService.findAll(query);
   }
 
   @Get(':id')
@@ -58,7 +59,7 @@ export class ImagesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string, @User() user) {
+  remove(@Param('id', ParseIntPipe) id: string, @User() user: users) {
     return this.imagesService.remove(+id, user);
   }
 }

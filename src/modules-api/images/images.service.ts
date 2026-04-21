@@ -4,12 +4,14 @@ import { UpdateImageDto } from './dto/update-image.dto';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
 import { CloudinaryService } from 'src/modules-system/cloudinary/cloudinary.service';
 import { buildQueryPrisma } from 'src/common/helpers/build-prisma-query.helper';
+import { FindImageDto } from './dto/find-image.dto';
+import { users } from '@prisma/client';
 
 @Injectable()
 export class ImagesService {
   constructor(private prisma: PrismaService, private cloudinaryService: CloudinaryService) {}
-  async create(createImageDto: CreateImageDto, userId: number) {
-
+  async create(createImageDto: CreateImageDto, user: users) {
+    const userId = user.id;
     const { title, description } = createImageDto;
     const newImage = await this.prisma.images.create({
       data: {
@@ -53,8 +55,8 @@ export class ImagesService {
     return updateImage
   }
 
-  async findAll(req) {
-    const { page, pageSize, index, where } = buildQueryPrisma(req);
+  async findAll(query: FindImageDto) {
+    const { page, pageSize, index, where } = buildQueryPrisma(query);
 
     const imagesPromise = this.prisma.images.findMany({
       where: where,
@@ -83,11 +85,20 @@ export class ImagesService {
       pageSize: pageSize,
       items: images,
     }
-    
-    // await this.cacheManager.set('article', result);
-    // console.dir(this.cacheManager.stores, {colors: true, depth: null});
 
     return result;
+  }
+
+  async findByName(query: string) {
+    const images = await this.prisma.images.findMany({
+      where: {
+        title: {
+          contains: query
+        }
+      }
+    })
+
+    return images;
   }
 
   findOne(id: number) {
@@ -110,7 +121,7 @@ export class ImagesService {
     return `This action updates a #${id} image`;
   }
 
-  async remove(imageId: number, user: any) {
+  async remove(imageId: number, user: users) {
     const { id } = user;
     const userExist = this.prisma.users.findUnique({
       where: {

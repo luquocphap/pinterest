@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
 import { buildQueryPrisma } from 'src/common/helpers/build-prisma-query.helper';
+import type { users } from '@prisma/client';
 
 @Injectable()
 export class CommentsService {
   constructor(private prisma: PrismaService){}
-  async create(createCommentDto: CreateCommentDto, userId: number) {
+  async create(createCommentDto: CreateCommentDto, user: users) {
+    const userId = user.id;
     const newComment = await this.prisma.comments.create({
       data: {
         imageId: createCommentDto.imageId,
@@ -66,11 +68,48 @@ export class CommentsService {
     return `This action returns a #${id} comment`;
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async update(id: number, updateCommentDto: UpdateCommentDto) {
+    const comment = await this.prisma.comments.findUnique({
+      where: {
+        id: id,
+        isDeleted: false
+      }
+    });
+
+    if (!comment) throw new BadRequestException("Image does not exist");
+
+    await this.prisma.comments.update({
+      where: {
+        id: id
+      },
+      data: {
+        ...(updateCommentDto.content !== undefined && { content: updateCommentDto.content })
+      }
+    })
+
+    return true
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(id: number, user: users) {
+    const comment = await this.prisma.comments.findUnique({
+      where: {
+        id: id,
+        isDeleted: false
+      }
+    });
+
+    if (!comment) throw new BadRequestException("Comment Does not exists");
+
+    await this.prisma.comments.update({
+      where: {
+        id: id
+      },
+      data: {
+        isDeleted: true,
+        deletedBy: user.id
+      }
+    })
+
+    return true;
   }
 }

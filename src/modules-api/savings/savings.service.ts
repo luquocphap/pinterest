@@ -2,11 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { SaveDto } from './dto/save.dto';
 import prismaConfig from 'prisma.config';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
+import { users } from '@prisma/client';
 
 @Injectable()
 export class SavingsService {
     constructor(private prisma: PrismaService) {}
-    async saveImage(body: SaveDto, user: any){
+    async saveImage(body: SaveDto, user: users){
         const { id } = user;
 
         const image = await this.prisma.images.findUnique({
@@ -27,7 +28,7 @@ export class SavingsService {
         return true;
     }
 
-    async checkSaving(imageId: number, user: any){
+    async checkSaving(imageId: number, user: users){
         const { id } = user;
         const image = await this.prisma.images.findUnique({
             where: {

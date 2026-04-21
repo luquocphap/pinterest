@@ -1,5 +1,7 @@
-export const buildQueryPrisma = (req) => {
-    let { page, pageSize, filters } = req.query;
+import { FindImageDto } from "src/modules-api/images/dto/find-image.dto";
+
+export const buildQueryPrisma = (query: FindImageDto) => {
+    let { page, pageSize, queryName } = query;
 
     const pageDefault = 1;
     const pageSizeDefault = 3;
@@ -19,26 +21,12 @@ export const buildQueryPrisma = (req) => {
     // xử lý index
     const index = (page - 1) * pageSize;
 
-    // xử lý filters
-    try {
-        filters = JSON.parse(filters);
-    } catch (error) {
-        filters = {};
-    }
-    // tìm kiếm trong filter nếu giá trị nào là string thì bọc nó bằng 1 object có key là contains
-    Object.entries(filters).forEach(([key, value]) => {
-        // nếu lọc với string thì lồng vào 1 một object có key là contains
-        if (typeof value === "string") {
-            filters[key] = {
-                contains: value,
-            };
-        }
-    });
-
-    console.log({ page, pageSize, index, filters });
+    console.log({ page, pageSize, index, queryName });
 
     const where = {
-        ...filters,
+        title: {
+            contains: queryName || ""
+        },
         isDeleted: false,
     };
 
