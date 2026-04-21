@@ -1,16 +1,21 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
 
 export class RegisterBody {
     @IsNotEmpty()
     @IsEmail(undefined, { message: "Invalid Email" })
-    email: string;
+    @ApiProperty({ example: "luphap@gmail.com" })
+    email!: string;
 
     @IsNotEmpty()
-    password: string;
+    @ApiProperty({ example: "123456" })
+    password!: string;
 
     @IsNotEmpty()
-    fullName: string;
+    @ApiProperty({ example: "Lu Quoc Phap"})
+    fullName!: string;
 
     @IsOptional()
-    age: number;
+    @ApiProperty({ example: "21" })
+    age?: number;
 }

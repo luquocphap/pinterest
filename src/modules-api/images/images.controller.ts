@@ -6,6 +6,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/modules-system/cloudinary/cloudinary.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { ImageUploadDto } from './dto/image-upload.dto';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('images')
 export class ImagesController {
@@ -18,13 +20,18 @@ export class ImagesController {
   }
 
   @Post('/:imageId')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'List of cats',
+    type: ImageUploadDto,
+  })
   @UseInterceptors(FileInterceptor('image_file'))
   async uploadImage(
     @Param('imageId', ParseIntPipe)
     imageId: number,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: ".(png|jpeg|jpg)" })
+        .addFileTypeValidator({ fileType: ".(png|jpeg|jpg|webp)" })
         .addMaxSizeValidator({ maxSize: 1024 * 1024 * 5 })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY})
     ) 
