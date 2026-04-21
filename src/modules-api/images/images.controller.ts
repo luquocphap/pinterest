@@ -53,12 +53,12 @@ export class ImagesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
+  update(@Param('id', ParseIntPipe) id: string, @Body() updateImageDto: UpdateImageDto) {
     return this.imagesService.update(+id, updateImageDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.imagesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: string, @User() user) {
+    return this.imagesService.remove(+id, user);
   }
 }

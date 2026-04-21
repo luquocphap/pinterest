@@ -110,7 +110,38 @@ export class ImagesService {
     return `This action updates a #${id} image`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} image`;
+  async remove(imageId: number, user: any) {
+    const { id } = user;
+    const userExist = this.prisma.users.findUnique({
+      where: {
+        id: id
+      }
+    });
+
+    const deletedImage = await this.prisma.images.findUnique({
+      where: {
+        id: imageId
+      },
+      select: {
+        userId: true
+      }
+    })
+
+    if (!deletedImage) throw new BadRequestException(`Image ${id} does not exists`);
+
+    if (deletedImage.userId === Number(id)) throw new BadRequestException("You cannot delete");
+
+    await this.prisma.images.update({
+      where: {
+        id: imageId
+      },
+      data: {
+        isDeleted: true,
+        deletedBy: Number(id)
+      }
+    })
+    return true;
   }
+
+
 }

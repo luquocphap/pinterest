@@ -14,12 +14,13 @@ import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
 import { REDIS_URL } from './common/constants/app.constant';
 import type { Cache } from 'cache-manager';
+import { UsersModule } from './modules-api/users/users.module';
 
 @Module({
   imports: [AuthModule, PrismaModule, TokenModule, ImagesModule, CommentsModule, CacheModule.register({
     isGlobal: true,
     stores: [new KeyvRedis(REDIS_URL)]
-  })],
+  }), UsersModule],
   controllers: [AppController],
   providers: [
     AppService,
