@@ -1,0 +1,26 @@
+name: cd
+
+on:
+    workflow_run: 
+        workflows: ["ci"]
+        types: 
+            - completed
+
+
+jobs:
+    start:
+        runs-on: pinterest
+
+        steps:
+            - name: Stop Container
+              run: sudo docker container stop con-backend
+            
+            - name: Remove Container
+              run: sudo docker container remove con-backend
+            
+            - name: Delete Image
+              run: sudo docker image remove luquocphap/img-pinterest:latest
+            
+            - name: Pull Image
+              working-directory: /home/luquocphap/pinterest
+              run: sudo docker compose up -d
