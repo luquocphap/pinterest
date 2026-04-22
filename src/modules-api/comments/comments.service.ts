@@ -64,10 +64,6 @@ export class CommentsService {
     return result
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
-
   async update(id: number, updateCommentDto: UpdateCommentDto) {
     const comment = await this.prisma.comments.findUnique({
       where: {

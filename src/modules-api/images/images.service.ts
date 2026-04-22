@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
 import { CloudinaryService } from 'src/modules-system/cloudinary/cloudinary.service';
 import { buildQueryPrisma } from 'src/common/helpers/build-prisma-query.helper';
@@ -115,10 +114,6 @@ export class ImagesService {
 
     return image
 
-  }
-
-  update(id: number, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image`;
   }
 
   async remove(imageId: number, user: users) {

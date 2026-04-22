@@ -16,6 +16,7 @@ import { REDIS_URL } from './common/constants/app.constant';
 import type { Cache } from 'cache-manager';
 import { UsersModule } from './modules-api/users/users.module';
 import { SavingsModule } from './modules-api/savings/savings.module';
+import { PermissionGuard } from './common/guards/permission.guard';
 
 @Module({
   imports: [AuthModule, PrismaModule, TokenModule, ImagesModule, CommentsModule, CacheModule.register({
@@ -28,6 +29,10 @@ import { SavingsModule } from './modules-api/savings/savings.module';
     {
       provide: APP_GUARD,
       useClass: ProtectGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard
     },
     {
       provide: APP_INTERCEPTOR,

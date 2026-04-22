@@ -6,6 +6,18 @@ import { identity } from 'rxjs';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+  async getUserInfo(id: number){
+    const user = this.prisma.users.findUnique({
+      where: {
+        id: id
+      }
+    });
+
+    if (!user) throw new BadRequestException("This user does not exist");
+
+    return user;
+  }
   
   async update(user: any, updateUserDto: UpdateUserDto) {
     const { id } = user;
