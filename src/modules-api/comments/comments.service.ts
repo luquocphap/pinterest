@@ -25,7 +25,8 @@ export class CommentsService {
     const { page, pageSize, index } = buildQueryPrisma(req);
     const commentsPromise = this.prisma.comments.findMany({
       where: {
-        imageId: imageId
+        imageId: imageId,
+        isDeleted: false
       },
       skip: index,
       take: pageSize,
