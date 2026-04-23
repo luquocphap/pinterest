@@ -135,7 +135,7 @@ export class ImagesService {
 
     if (!deletedImage) throw new BadRequestException(`Image ${id} does not exists`);
 
-    if (deletedImage.userId === Number(id)) throw new ForbiddenException("You cannot delete other's image");
+    if (deletedImage.userId !== Number(id)) throw new ForbiddenException("You cannot delete other's image");
 
     await this.prisma.images.update({
       where: {

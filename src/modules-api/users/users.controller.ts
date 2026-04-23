@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseIntPipe, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from 'src/common/decorators/user.decorator';
@@ -26,6 +26,7 @@ export class UsersController {
 
   @Get(':id')
   @ApiParam({ name: "id", type: "number", description: "id người dùng" })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Permissions('READ', 'USER_PROFILE')
   getUserInfo(@Param('id', ParseIntPipe) id){
     return this.usersService.getUserInfo(id);

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Post, Req, Res, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginBody } from './dto/login.dto';
 import type { Request, Response } from 'express';
@@ -6,6 +6,7 @@ import { RegisterBody } from './dto/register.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { User } from 'src/common/decorators/user.decorator';
 import type { users } from '@prisma/client';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +37,8 @@ export class AuthController {
   }
 
   @Get("user-info")
-  async getUserInfo(@User() user: users) {
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getUserInfo(@User() user: UserEntity) {
     return user;
   }
 
