@@ -10,7 +10,7 @@ export class TokenService {
             throw new BadRequestException("Invalid UserId");
         }
 
-        const accessToken = jwt.sign({ userId: userId }, ACCESS_TOKEN_SECRET as string, { expiresIn: "5s" });
+        const accessToken = jwt.sign({ userId: userId }, ACCESS_TOKEN_SECRET as string, { expiresIn: "15m" });
 
         return accessToken;
     }
