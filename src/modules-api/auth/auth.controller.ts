@@ -38,8 +38,8 @@ export class AuthController {
 
   @Get("user-info")
   @UseInterceptors(ClassSerializerInterceptor)
-  async getUserInfo(@User() user: UserEntity) {
-    return user;
+  async getUserInfo(@User() user: users) {
+    return new UserEntity(user);
   }
 
   @Post("refresh-token")

@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { Permissions } from 'src/common/decorators/permission.decorator';
 import { ApiParam } from '@nestjs/swagger';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -28,7 +29,8 @@ export class UsersController {
   @ApiParam({ name: "id", type: "number", description: "id người dùng" })
   @UseInterceptors(ClassSerializerInterceptor)
   @Permissions('READ', 'USER_PROFILE')
-  getUserInfo(@Param('id', ParseIntPipe) id){
-    return this.usersService.getUserInfo(id);
+  async getUserInfo(@Param('id', ParseIntPipe) id){
+    const user = await this.usersService.getUserInfo(id);
+    return new UserEntity(user as UserEntity);
   }
 }
