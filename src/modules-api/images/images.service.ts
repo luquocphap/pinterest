@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateImageDto } from './dto/create-image.dto';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
 import { CloudinaryService } from 'src/modules-system/cloudinary/cloudinary.service';
@@ -135,7 +135,7 @@ export class ImagesService {
 
     if (!deletedImage) throw new BadRequestException(`Image ${id} does not exists`);
 
-    if (deletedImage.userId === Number(id)) throw new BadRequestException("You cannot delete");
+    if (deletedImage.userId === Number(id)) throw new ForbiddenException("You cannot delete other's image");
 
     await this.prisma.images.update({
       where: {

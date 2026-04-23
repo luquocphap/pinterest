@@ -4,6 +4,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import type { users } from '@prisma/client';
+import { FindCommentDto } from './dto/find-comment.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -15,7 +16,7 @@ export class CommentsController {
   }
 
   @Get(":imageId")
-  findAllByImage(@Param('imageId', ParseIntPipe) id: number, @Req() req) {
+  findAllByImage(@Param('imageId', ParseIntPipe) id: number, @Req() req: FindCommentDto) {
     return this.commentsService.findAllByImage(id, req);
   }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PrismaService } from 'src/modules-system/prisma/prisma.service';
@@ -95,6 +95,7 @@ export class CommentsService {
     });
 
     if (!comment) throw new BadRequestException("Comment Does not exists");
+    if (comment.userId !== user.id) throw new ForbiddenException("you cannot delete other's comment")
 
     await this.prisma.comments.update({
       where: {
